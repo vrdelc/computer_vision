@@ -1,0 +1,3 @@
+[submodule "SIFT"]
+	path = SIFT
+	url = https://github.com/vrdelc/SIFT_Python3.git
