@@ -26,7 +26,7 @@ class Dataset:
         print("Total of {} images in the dataset".format(sum(self.number_images_categories)))
         self.data = [list_labels, full_names_img]
 
-    def generate_descriptors(self):
+    def generate_descriptors(self, folder):
         for i in range(0,sum(self.number_images_categories)):
             file_name = self.data[1][i]
             category = self.data[0][i]
@@ -41,6 +41,6 @@ class Dataset:
                 #Obtain the descriptors
                 f1 = s1.get_features().get_descriptor()
                 #Save in a compressed file
-                np.savetxt('descriptors/'+category+'_'+id_image+'.gz', f1, delimiter=',')
+                np.savetxt(folder+category+'_'+id_image+'.gz', f1, delimiter=',')
             except:
                 print("SIFT error in image: {}".format(file_name))

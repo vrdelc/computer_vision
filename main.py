@@ -16,15 +16,22 @@ generate_dataset = False
 if generate_dataset:
     crawler = Crawler()
     crawler.folder=folder_dataset
-    crawler.generate()
+    crawler.generate(folder_descriptors)
 
 #LOAD DATASET
-load_dataset = False
-if load_dataset:
+generate_descriptors = False
+if generate_descriptors:
     dataset = Dataset(folder_dataset)
     #Generate generate descriptors
     dataset.generate_descriptors()
 
-#LOAD DESCRIPTORS
-descriptors = Descriptors(folder_descriptors)
-print(descriptors.data)
+#LOAD DESCRIPTORS AND VOCABULARY
+generate_vocabulary = False
+vocabulary_words = 10
+descriptors = Descriptors(folder_descriptors, not(generate_vocabulary))
+if generate_vocabulary:
+    descriptors.generate_vocabulary(vocabulary_words)
+print("Word in vocabulary: {}".format(len(descriptors.vocabulary)))
+
+#GENERATE HISTOGRAMS
+descriptors.generate_histograms()
