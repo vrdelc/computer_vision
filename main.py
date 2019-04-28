@@ -1,11 +1,15 @@
 from crawler import Crawler
 from dataset import Dataset
 from descriptor import Descriptors
+from classifier import Classifier
 import os
 
 folder_dataset = 'C:/dataset/'
 folder_descriptors = 'C:/descriptors/'
-#folder_dataset = 'crawler/'
+"""
+folder_dataset = 'crawler/'
+folder_descriptors = 'descriptors/'
+"""
 
 #Create folders that are neccessary if not exists
 if not(os.path.isdir('files/')):
@@ -27,11 +31,15 @@ if generate_descriptors:
 
 #LOAD DESCRIPTORS AND VOCABULARY
 generate_vocabulary = False
-vocabulary_words = 10
-descriptors = Descriptors(folder_descriptors, not(generate_vocabulary))
-if generate_vocabulary:
-    descriptors.generate_vocabulary(vocabulary_words)
-print("Word in vocabulary: {}".format(len(descriptors.vocabulary)))
+generate_histograms = False
+if generate_histograms:
+    descriptors = Descriptors(folder_descriptors, not(generate_vocabulary))
+    if generate_vocabulary:
+        vocabulary_words = 100
+        descriptors.generate_vocabulary(vocabulary_words)
+        print("Word in vocabulary: {}".format(len(descriptors.vocabulary)))
+    descriptors.generate_histograms()
 
-#GENERATE HISTOGRAMS
-descriptors.generate_histograms()
+#CREATE CLASSIFIER
+classifier = Classifier(folder_descriptors)
+classifier.score()

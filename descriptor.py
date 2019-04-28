@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from scipy.cluster.vq import *
+from sklearn.externals import joblib
 
 class ImageInfo:
 
@@ -18,11 +19,16 @@ class Descriptors:
         files = os.listdir(folder)
         self.data = []
         self.descriptors = []
+        num_images = len(files)
+        cont = 1
         #For each file in directory
         for file in files:
-            if "_" not in file and load_vocabulary:
-                #Load the vocabulary
-                self.vocabulary = np.loadtxt(self.folder+'vocabulary.gz', delimiter=',')
+            print("Reading  descriptors of image {} of {}".format(cont,num_images))
+            cont = cont+1
+            if "_" not in file:
+                if load_vocabulary:
+                    #Load the vocabulary
+                    self.vocabulary = np.loadtxt(self.folder+'vocabulary.gz', delimiter=',')
             else:
                 #Generate the image information
                 category = file.split('_')[0]
@@ -46,9 +52,13 @@ class Descriptors:
     def generate_histograms(self):
         # Calculate the histogram of features
         self.im_features = np.zeros((len(self.data), len(self.vocabulary)), "float32")
+        self.im_classes = []
+        self.im_names = []
         for i in range(len(self.data)):
             words, distance = vq(self.data[i].descriptor,self.vocabulary)
             for w in words:
                 self.im_features[i][w] += 1
-
-        print(self.im_features)
+            self.im_classes.append(self.data[i].category)
+            self.im_names.append(self.data[i].file_name)
+        np.savetxt(self.folder+'histogramData.gz', self.im_features, delimiter=',')
+        joblib.dump((self.im_classes, self.im_names), self.folder+'histogramClasses.gz')
