@@ -12,7 +12,7 @@ folder_dataset = 'C:/dataset/'
 IMG_SIZE = 700
 
 #GENERATE DATASET
-dataset = Dataset(img_size=IMG_SIZE)
+dataset = Dataset(img_size=IMG_SIZE,folder=folder_dataset)
 dataset.show_statics()
 dataset.prepare_data()
 dataset.generate_model()

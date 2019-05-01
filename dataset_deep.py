@@ -65,14 +65,13 @@ class Dataset:
         self.train_data = np.array([i for i in self.X_train]).reshape(-1, self.img_size, self.img_size, 1)
         self.train_labels = np.array([i for i in y_train_info])
 
-        y_test_info = []
+        self.test_labels = []
         for y in self.y_test:
-            data = []
-            for category in self.categories_names:
-                data.append(int(category == y))
-            y_test_info.append(data)
+            if self.categories_names[0] == y:
+                self.test_labels.append(0)
+            else:
+                self.test_labels.append(1)
         self.test_data = np.array([i for i in self.X_test]).reshape(-1, self.img_size, self.img_size, 1)
-        self.test_labels = np.array([i for i in y_test_info])
 
 
     def generate_model(self):
@@ -102,27 +101,20 @@ class Dataset:
 
         self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics = ['accuracy'])
 
-        self.model.fit(self.train_data, self.train_labels, batch_size = 50, epochs = 5, verbose = 1)
+        self.model.fit(self.train_data, self.train_labels, batch_size = 50, epochs = 20, verbose = 1, shuffle=True)
 
     def evaluate(self):
-        predict = self.model.predict(self.test_data)
-
-        prediction = []
-        for i in range(0,len(predict)):
-            if predict[i][0]>0.5:#gambling
-                prediction.append([1, 0])
-            else: #non-gambling
-                prediction.append([0, 1])
+        predict_classes = self.model.predict_classes(self.test_data)
 
         confussion_matrix = [[0,0],[0,0]]
         for i in range(len(self.test_labels)):
-            if self.test_labels[i][0] == 1: #gambling
-                if prediction[i][0] == 1: #TP
+            if self.test_labels[0] == 0: #gambling
+                if predict_classes[i] == 0 : #TP
                     confussion_matrix[0][0] = confussion_matrix[0][0] +1
                 else: #FN
                     confussion_matrix[1][0] = confussion_matrix[1][0] +1
             else: #non-gambling
-                if prediction[i][0] == 1: #FP
+                if predict_classes[i] == 0: #FP
                     confussion_matrix[0][1] = confussion_matrix[0][1] +1
                 else: #TN
                     confussion_matrix[1][1] = confussion_matrix[1][1] +1
